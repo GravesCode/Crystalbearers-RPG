@@ -2,76 +2,34 @@
 #main.py - main program for running battle simulator
 import pygame
 import os
-import menu
+from menu import *
+
 #Infrastructure for microservice architecture
 import pika
 
-# pygame setup
+#pygame library initialization - mandatory
 pygame.init()
 
-#Define Overall Screen
+#Screen setup
 screen_width = 1280
 screen_height = 720
 screen = pygame.display.set_mode((screen_width, screen_height))
-#Give user the option to choose a hero class
+
+#Hero loading
 hero_class = "fighter"
-enemy = pygame.transform.scale(
-    pygame.image.load('images\\Lethalweapon.png'),
-    (150,150))
 hero = pygame.transform.scale(
     pygame.image.load('images\\fighter.png'),
     (150,150))
 
-#MENU SETUP SECTION
-menu_width = 1280
-menu_height = 300
-menu_surface = pygame.Surface((menu_width, menu_height))
-menu_surface.fill((0, 0, 0))
-# Function to handle menu item selection
-def mouse_button_handler(menu_items, mouse_pos):
-    for item in menu_items:
-        if item["rect"].collidepoint(mouse_pos):
+#Enemy loading
+enemy_name = "Lethal Weapon"
+enemy = pygame.transform.scale(
+    pygame.image.load('images\\Lethalweapon.png'),
+    (150,150))
 
-            item["action"]()  # Call the associated action function
-
-def fight_button():
-    print("You struck the foe! 37 damage")
-
-def technique_button():
-    print("You used a special skill! 100 damage")
-
-def magic_button():
-    print("Cast a fireball! 28 damage")
-
-def defend_button():
-    print("Successfully defended against the strong foe!")
-
-#Define distance between top and bottom to place menu position
-menu_vertical_offset = 420
-
-#When user is able to choose a class, scalable towards other choices of menu items
-match hero_class:
-    case "fighter":
-        menu_items = [
-            { "text": "Fight", "color": (255,255,255), "font": pygame.font.Font(None, 32), "action": fight_button},
-            { "text": "Magic", "color": (255,255,255), "font": pygame.font.Font(None, 32), "action": technique_button},
-            { "text": "Defend", "color": (255,255,255), "font": pygame.font.Font(None, 32), "action": defend_button},
-        ]
-    case _:
-        #Default selection. Should not resolve here
-        menu_items = [
-            { "text": "Error", "color": (255,255,255), "font": pygame.font.Font(None, 32), "action": fight_button},
-            { "text": "Error", "color": (255,255,255), "font": pygame.font.Font(None, 32), "action": magic_button},
-            { "text": "Error", "color": (255,255,255), "font": pygame.font.Font(None, 32), "action": defend_button},
-        ]
-item_spacing = 50  # Adjust spacing between items
-y_offset = 50  # Adjust starting vertical position
-for item in menu_items:
-    text_surface = item["font"].render(item["text"], True, item["color"])
-    text_rect = text_surface.get_rect(center=(850, y_offset))
-    menu_surface.blit(text_surface, text_rect)
-    item["rect"] = text_rect  # Store rectangle for click detection
-    y_offset += text_rect.height + item_spacing
+#Menu setup - different menus for different classes for create_menu param
+menu_items = create_menu(hero_class)
+menu_surface = create_menu_surface(menu_items)
 
 clock = pygame.time.Clock()
 running = True
@@ -80,7 +38,7 @@ running = True
 screen.fill((000,255,255))
 screen.blit(enemy, (300,200))
 screen.blit(hero, (800,200))
-screen.blit(menu_surface, (0,menu_vertical_offset))
+screen.blit(menu_surface, (0,420))
 pygame.display.update()
 
 while running:
@@ -92,7 +50,7 @@ while running:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             # Get mouse position relative to screen
             mouse_position = event.pos 
-            mouse_position_on_menu = (mouse_position[0], mouse_position[1] - menu_vertical_offset)  # Adjust for menu offset
+            mouse_position_on_menu = (mouse_position[0], mouse_position[1] - 420)  # Adjust for menu offset
             mouse_button_handler(menu_items, mouse_position_on_menu)  # Pass adjusted position
 
     # flip() the display to put your work on screen
