@@ -13,7 +13,8 @@ pygame.init()
 screen_width = 1280
 screen_height = 720
 screen = pygame.display.set_mode((screen_width, screen_height))
-
+#Give user the option to choose a hero class
+hero_class = "fighter"
 enemy = pygame.transform.scale(
     pygame.image.load('images\\Lethalweapon.png'),
     (150,150))
@@ -30,10 +31,14 @@ menu_surface.fill((0, 0, 0))
 def mouse_button_handler(menu_items, mouse_pos):
     for item in menu_items:
         if item["rect"].collidepoint(mouse_pos):
+
             item["action"]()  # Call the associated action function
 
 def fight_button():
     print("You struck the foe! 37 damage")
+
+def technique_button():
+    print("You used a special skill! 100 damage")
 
 def magic_button():
     print("Cast a fireball! 28 damage")
@@ -44,11 +49,21 @@ def defend_button():
 #Define distance between top and bottom to place menu position
 menu_vertical_offset = 420
 
-menu_items = [
-    { "text": "Fight", "color": (255,255,255), "font": pygame.font.Font(None, 32), "action": fight_button},
-    { "text": "Magic", "color": (255,255,255), "font": pygame.font.Font(None, 32), "action": magic_button},
-    { "text": "Defend", "color": (255,255,255), "font": pygame.font.Font(None, 32), "action": defend_button},
-]
+#When user is able to choose a class, scalable towards other choices of menu items
+match hero_class:
+    case "fighter":
+        menu_items = [
+            { "text": "Fight", "color": (255,255,255), "font": pygame.font.Font(None, 32), "action": fight_button},
+            { "text": "Magic", "color": (255,255,255), "font": pygame.font.Font(None, 32), "action": technique_button},
+            { "text": "Defend", "color": (255,255,255), "font": pygame.font.Font(None, 32), "action": defend_button},
+        ]
+    case _:
+        #Default selection. Should not resolve here
+        menu_items = [
+            { "text": "Error", "color": (255,255,255), "font": pygame.font.Font(None, 32), "action": fight_button},
+            { "text": "Error", "color": (255,255,255), "font": pygame.font.Font(None, 32), "action": magic_button},
+            { "text": "Error", "color": (255,255,255), "font": pygame.font.Font(None, 32), "action": defend_button},
+        ]
 item_spacing = 50  # Adjust spacing between items
 y_offset = 50  # Adjust starting vertical position
 for item in menu_items:
@@ -84,8 +99,6 @@ while running:
     pygame.display.flip()
 
     # limits FPS to 60
-    # dt is delta time in seconds since last frame, used for framerate-
-    # independent physics.
-    dt = clock.tick(60) / 1000
+    clock.tick(60) / 1000
 
 pygame.quit()
