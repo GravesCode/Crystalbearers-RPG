@@ -8,6 +8,18 @@ def create_menu(hero_class):
                 { "text": "Technique", "color": (255,255,255), "font": pygame.font.Font(None, 32), "action": technique_button},
                 { "text": "Defend", "color": (255,255,255), "font": pygame.font.Font(None, 32), "action": defend_button},
             ]
+        case "whitemage":
+            menu_items = [
+                { "text": "Fight", "color": (255,255,255), "font": pygame.font.Font(None, 32), "action": fight_button},
+                { "text": "Heal", "color": (255,255,255), "font": pygame.font.Font(None, 32), "action": heal_button},
+                { "text": "Defend", "color": (255,255,255), "font": pygame.font.Font(None, 32), "action": defend_button},
+            ]
+        case "blackmage":
+            menu_items = [
+                { "text": "Fight", "color": (255,255,255), "font": pygame.font.Font(None, 32), "action": fight_button},
+                { "text": "Magic", "color": (255,255,255), "font": pygame.font.Font(None, 32), "action": magic_button},
+                { "text": "Defend", "color": (255,255,255), "font": pygame.font.Font(None, 32), "action": defend_button},
+            ]
         case _:
             #Default selection. Should not resolve here
             menu_items = [
@@ -43,6 +55,9 @@ def fight_button():
 
 def technique_button():
     print("You used a special skill! 100 damage")
+
+def heal_button():
+    print("You healed your party for 49 damage!")
 
 def magic_button():
     print("Cast a fireball! 28 damage")
