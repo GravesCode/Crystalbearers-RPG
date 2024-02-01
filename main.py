@@ -64,8 +64,28 @@ while(character_selected is False):
 char_class_prompt = pygame.font.Font(None,32).render("Name your character:", True, (255,255,255))
 screen.fill((000,000,000))
 screen.blit(char_class_prompt, (500,100))
+character_name_box = pygame.draw.rect(screen, (0Xff,0XFF,0XFF), pygame.Rect(500, 150, 250, 40))
 screen.blit(character_selected, (500,350))
 pygame.display.update()
+#While the name has not been entered
+character_name_flag = False
+character_name_input = ''
+while(character_name_flag == False):
+    for event in pygame.event.get():
+        if(event.type == pygame.KEYDOWN):
+            if(event.key == pygame.K_RETURN):
+                character_name_flag = True
+            elif(event.key == pygame.K_BACKSPACE):
+                if(character_name_input != ''):
+                    character_name_input = character_name_input[:-1]
+            else:
+                character_name_input += event.unicode
+                text_surface = pygame.font.Font(None, 50).render(character_name_input, True, (0xFF,000,0xFF))
+                screen.blit(text_surface, (500, 150))
+                pygame.display.flip()
+
+pygame.display.flip()
+
 
 #Splash window - introduce game and give instructions to player
 #Could make up for heuristics of someone who needs process and a game walkthrough
@@ -105,6 +125,7 @@ screen.fill((000,255,255))
 screen.blit(enemy, (300,200))
 screen.blit(hero, (800,200))
 screen.blit(menu_surface, (0,420))
+screen.blit(text_surface, (800, 180))
 pygame.display.update()
 
 #Main game loop
