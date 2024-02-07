@@ -4,7 +4,6 @@ import pygame
 import os
 import time
 from menu import *
-from eventhandler import *
 
 #Infrastructure for microservice architecture
 import pika
@@ -151,13 +150,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            # Get mouse position relative to screen
-            mouse_position = event.pos 
-            #Have to manually reduce 420 to adjust from Y axis.. Don't know how to do this cleaner
-            mouse_position_on_menu = (mouse_position[0], mouse_position[1] - 420)
-            mouse_button_handler(menu_items, mouse_position_on_menu)  # Pass adjusted position
-        
-        running = eventhandler(event, menu_items)
+            mouse_button_handler(menu_items)  # Pass adjusted position
 
     # flip() the display to put your work on screen
     pygame.display.flip()

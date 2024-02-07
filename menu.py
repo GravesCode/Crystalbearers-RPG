@@ -45,9 +45,10 @@ def create_menu_surface(menu_items):
     # Function to handle menu item selection
     return menu_surface
 
-def mouse_button_handler(menu_items, mouse_pos):
+def mouse_button_handler(menu_items):
+    mouse_position_offset = (pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1] - 420)
     for item in menu_items:
-        if item["rect"].collidepoint(mouse_pos):
+        if item["rect"].collidepoint(mouse_position_offset):
             button_handler(item["action"])  # Call the associated action function
 
 def button_handler(action_button):
