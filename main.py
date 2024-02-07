@@ -129,8 +129,6 @@ enemy = pygame.transform.scale(
     (150,150))
 
 #Menu setup - different menus for different classes for create_menu param
-menu_items = create_menu(hero_class)
-menu_surface = create_menu_surface(menu_items)
 
 clock = pygame.time.Clock()
 running = True
@@ -138,7 +136,7 @@ running = True
 screen.fill((000,255,255))
 screen.blit(enemy, (300,200))
 screen.blit(hero, (800,200))
-screen.blit(menu_surface, (0,420))
+menu_items = create_menu(hero_class, screen)
 screen.blit(name_surface, (825, 180))
 pygame.display.update()
 
@@ -150,6 +148,8 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
+            #I'd like to keep menu_items as a variable directly in menu.py, but struggle to figure out how to
+            #keep it global throughout different functions
             mouse_button_handler(menu_items)  # Pass adjusted position
 
     # flip() the display to put your work on screen

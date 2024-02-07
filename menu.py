@@ -1,6 +1,6 @@
 import pygame
 
-def create_menu(hero_class):
+def create_menu(hero_class, screen):
     match hero_class:
         case "fighter":
             menu_items = [
@@ -27,9 +27,7 @@ def create_menu(hero_class):
                 { "text": "Error", "color": (255,255,255), "font": pygame.font.Font(None, 32), "action": 'magic_button'},
                 { "text": "Error", "color": (255,255,255), "font": pygame.font.Font(None, 32), "action": 'defend_button'},
             ]
-    return menu_items
 
-def create_menu_surface(menu_items):
     item_spacing = 50  # Adjust spacing between items
     y_offset = 50  # Adjust starting vertical position
     menu_width = 1280
@@ -42,8 +40,9 @@ def create_menu_surface(menu_items):
         menu_surface.blit(text_surface, text_rect)
         item["rect"] = text_rect  # Store rectangle for click detection
         y_offset += text_rect.height + item_spacing
+    screen.blit(menu_surface, (0,420))
+    return menu_items
     # Function to handle menu item selection
-    return menu_surface
 
 def mouse_button_handler(menu_items):
     mouse_position_offset = (pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1] - 420)
