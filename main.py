@@ -12,12 +12,13 @@ import pika
 #pygame library initialization - mandatory
 pygame.init()
 
+#CRPG_INTRO_SCREEN
 # fill the screen with a color to wipe away anything from last frame
 #Screen setup - can be abstracted to another file
 screen_width = 1280
 screen_height = 720
 screen = pygame.display.set_mode((screen_width, screen_height))
-screen.fill((000,000,000))
+screen.fill((000,000,0xFF))
 char_class_prompt = pygame.font.Font(None,32).render("Choose your character!", True, (255,255,255))
 screen.blit(char_class_prompt, (500,100))
 fighter_image = pygame.transform.scale(
@@ -29,9 +30,9 @@ whitemage_image = pygame.transform.scale(
 blackmage_image = pygame.transform.scale(
     pygame.image.load('images\\blackmage.png'),
     (150,150))
-fighter_intro_rect = fighter_image.get_rect(center=(300, 250))
-whitemage_intro_rect = whitemage_image.get_rect(center=(600, 250))
-blackmage_intro_rect = blackmage_image.get_rect(center=(900, 250))
+fighter_intro_rect = fighter_image.get_rect(center=(320, 275))
+whitemage_intro_rect = whitemage_image.get_rect(center=(620, 275))
+blackmage_intro_rect = blackmage_image.get_rect(center=(920, 275))
 screen.blit(fighter_image, (250,200))
 screen.blit(whitemage_image, (550,200))
 screen.blit(blackmage_image, (850,200))
@@ -40,9 +41,24 @@ pygame.display.update()
 character_selected = False
 #wait in an infinite loop waiting for player to select character image
 while(character_selected is False):
+    intro_mouse_position = pygame.mouse.get_pos()
+    if(fighter_intro_rect.collidepoint(intro_mouse_position)):
+        pygame.draw.circle(screen, (255, 0, 0), fighter_intro_rect.center, fighter_intro_rect.width // 2, 5)
+        pygame.display.update()
+    elif(whitemage_intro_rect.collidepoint(intro_mouse_position)):
+        pygame.draw.circle(screen, (255, 0, 0), whitemage_intro_rect.center, blackmage_intro_rect.width // 2, 5)
+        pygame.display.update()
+    elif(blackmage_intro_rect.collidepoint(intro_mouse_position)):
+        pygame.draw.circle(screen, (255, 0, 0), blackmage_intro_rect.center, whitemage_intro_rect.width // 2, 5)
+        pygame.display.update()
+    else:
+        pygame.draw.circle(screen, (0, 0, 0xFF), fighter_intro_rect.center, fighter_intro_rect.width // 2, 5)
+        pygame.draw.circle(screen, (0, 0, 0xFF), whitemage_intro_rect.center, blackmage_intro_rect.width // 2, 5)
+        pygame.draw.circle(screen, (0, 0, 0xFF), blackmage_intro_rect.center, blackmage_intro_rect.width // 2, 5)
+        pygame.display.update()
+
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
-            intro_mouse_position = event.pos
             if(fighter_intro_rect.collidepoint(intro_mouse_position)):
                 character_selected = pygame.transform.scale(
                     pygame.image.load('images\\fighter.png'),
@@ -67,6 +83,7 @@ screen.blit(char_class_prompt, (500,100))
 character_name_box = pygame.draw.rect(screen, (0Xff,0XFF,0XFF), pygame.Rect(500, 150, 250, 40))
 screen.blit(character_selected, (500,350))
 pygame.display.update()
+
 #While the name has not been entered
 character_name_flag = False
 character_name_input = ''
@@ -80,12 +97,10 @@ while(character_name_flag == False):
                     character_name_input = character_name_input[:-1]
             else:
                 character_name_input += event.unicode
-                text_surface = pygame.font.Font(None, 50).render(character_name_input, True, (0xFF,000,0xFF))
-                screen.blit(text_surface, (500, 150))
-                pygame.display.flip()
-
-pygame.display.flip()
-
+    name_surface = pygame.font.Font(None, 50).render(character_name_input, True, (0x22,0x49,0x7F))
+    screen.blit(name_surface, (510, 155))
+    pygame.display.update()
+    pygame.display.flip()
 
 #Splash window - introduce game and give instructions to player
 #Could make up for heuristics of someone who needs process and a game walkthrough
@@ -125,7 +140,7 @@ screen.fill((000,255,255))
 screen.blit(enemy, (300,200))
 screen.blit(hero, (800,200))
 screen.blit(menu_surface, (0,420))
-screen.blit(text_surface, (800, 180))
+screen.blit(name_surface, (825, 180))
 pygame.display.update()
 
 #Main game loop
@@ -133,6 +148,15 @@ while running:
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
     for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            # Get mouse position relative to screen
+            mouse_position = event.pos 
+            #Have to manually reduce 420 to adjust from Y axis.. Don't know how to do this cleaner
+            mouse_position_on_menu = (mouse_position[0], mouse_position[1] - 420)
+            mouse_button_handler(menu_items, mouse_position_on_menu)  # Pass adjusted position
+        
         running = eventhandler(event, menu_items)
 
     # flip() the display to put your work on screen
