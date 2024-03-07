@@ -185,7 +185,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_button_handler(menu_items)  # Pass adjusted position
+            mouse_button_handler(menu_items, screen)  # Pass adjusted position
 
     # flip() the display to put your work on screen
     pygame.display.flip()

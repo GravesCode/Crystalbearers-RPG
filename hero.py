@@ -1,1 +1,0 @@
-#Update logic to generate hero

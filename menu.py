@@ -1,7 +1,16 @@
 import pygame
 import requests
-
+import time
 RNGServer = 'http://localhost:8000/api/rng/provider/'
+
+class enemy_health:
+    val = 100
+    max = 100
+    text = 0
+
+class hero_health:
+    val = 0
+    max = 0
 
 def create_menu(hero_class, screen):
     match hero_class:
@@ -45,30 +54,26 @@ def create_menu(hero_class, screen):
         y_offset += text_rect.height + item_spacing
     screen.blit(menu_surface, (0,420))
 
-    enemy_health_val = 100
-    enemy_health_max = 100
-    hero_health_val = 0
-    hero_health_max = 0
     #Create health status
     match hero_class:
         case "fighter":
-            hero_health_val = 150
-            hero_health_max = 150
+            hero_health.val = 150
+            hero_health.max = 150
         case "whitemage":
-            hero_health_val = 100
-            hero_health_max = 100
+            hero_health.val = 100
+            hero_health.max = 100
         case "blackmage":
-            hero_health_val = 100
-            hero_health_max = 100
-    hero_health_text = pygame.font.Font(None,48).render("HP: "+str(hero_health_val)+"/"+str(hero_health_max), True, (255,0,0))
-    enemy_health_text = pygame.font.Font(None,48).render("HP: "+str(enemy_health_val)+"/"+str(enemy_health_max), True, (255,0,0))
+            hero_health.val = 100
+            hero_health.max = 100
+    hero_health_text = pygame.font.Font(None,48).render("HP: "+str(hero_health.val)+"/"+str(hero_health.max), True, (255,0,0))
+    enemy_health.text = pygame.font.Font(None,48).render("HP: "+str(enemy_health.val)+"/"+str(enemy_health.max), True, (255,0,0))
     screen.blit(hero_health_text, (850,125))
-    screen.blit(enemy_health_text, (325,125))
+    screen.blit(enemy_health.text, (325,125))
 
     return menu_items
     # Function to handle menu item selection
 
-def mouse_button_handler(menu_items):
+def mouse_button_handler(menu_items, screen):
     mouse_position_offset = (pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1] - 420)
     for item in menu_items:
         if item["rect"].collidepoint(mouse_position_offset):
@@ -76,6 +81,7 @@ def mouse_button_handler(menu_items):
                 case "fight_button":
                     result = requests.get(RNGServer, {'min': 50, 'max': 100})
                     print("You damaged the Foe!", result.json()["random_number"], " damage.")
+                    damage_handler("enemy", result.json()["random_number"], screen)
                 case "technique_button":
                     result = requests.get(RNGServer, {'min': 50, 'max': 100})
                     print("You used a special skill!", result, "damage")
@@ -89,7 +95,11 @@ def mouse_button_handler(menu_items):
                     result = requests.get(RNGServer, {'min': 50, 'max': 100})
                     print("Successfully defended against the strong foe! Reduced damage by ", result, ".")
             #Enter combat
-        
+            result = requests.get(RNGServer, {'min': 25, 'max': 50})
+            damage_handler("hero", result.json()["random_number"], screen)
+            print("The foe damaged you! ", result.json()["random_number"], " damage.")
+            pygame.display.update()
+
 def mouse_hover_handler(menu_items, screen):
     mouse_position_offset = (pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1] - 420)
     for item in menu_items:
@@ -119,3 +129,35 @@ def mouse_hover_handler(menu_items, screen):
             pygame.draw.rect(screen, (0, 0, 0), [775, 440, 150, 50], 5)
             pygame.draw.rect(screen, (0, 0, 0), [775, 515, 150, 50], 5)
             pygame.draw.rect(screen, (0, 0, 0), [775, 590, 150, 50], 5)
+
+def damage_handler(target, adjustment, screen):
+    if(target == "hero"):
+        hero_health.val = hero_health.val - adjustment
+        hero_health.text = pygame.font.Font(None,48).render("HP: "+str(hero_health.val)+"/"+str(hero_health.max), True, (255,0,0))
+        screen.fill((000,255,255), (825,125,300, 40))
+        screen.blit(hero_health.text, (825,125))
+    elif(target == "enemy"):
+        if(adjustment > enemy_health.val):
+            enemy_health.val = 0
+        else:
+            enemy_health.val = enemy_health.val - adjustment
+        enemy_health.text = pygame.font.Font(None,48).render("HP: "+str(enemy_health.val)+"/"+str(enemy_health.max), True, (255,0,0))
+        screen.fill((000,255,255), (325,125,300, 40))
+        screen.blit(enemy_health.text, (325,125))
+        if(enemy_health.val == 0):
+            endgame_handler("win", screen)
+
+def endgame_handler(condition, screen):
+    match(condition):
+        case "win":
+            enemy_skull = pygame.transform.scale(
+                    pygame.image.load('images\\skull.png'),
+                    (250,250))
+            screen.blit(enemy_skull, (260,160))
+            pygame.display.update()
+            print("You win!")
+        case "lose":
+            print("You lose!")
+    time.sleep(5)
+    pygame.quit()
+    exit()
